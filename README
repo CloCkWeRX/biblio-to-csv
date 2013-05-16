@@ -1,0 +1,10 @@
+A series of tools for extracting, transforming 
+http://www.google.com/googlebooks/uspto-patents-grants-biblio.html
+
+
+
+To use:
+sudo apt-get install php5
+wget http://storage.googleapis.com/patents/grantbib/2013/ipgb20130101_wk01.zip
+unzip ipgb20130101_wk01.zip
+php transform.php
