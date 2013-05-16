@@ -75,94 +75,97 @@ fputcsv($examiners, array(
 
 
 // Parse entries
-$doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim));
+while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !== false) {
 
-$grant = $doc->{'us-bibliographic-data-grant'};
+  $grant = $doc->{'us-bibliographic-data-grant'};
 
-$application_document = $grant->{'application-reference'}->{'document-id'};
+  $application_document = $grant->{'application-reference'}->{'document-id'};
 
-//$country = (string)$application_document->country;
-$application_id = (string)$application_document->{'doc-number'};
+  //$country = (string)$application_document->country;
+  $application_id = (string)$application_document->{'doc-number'};
 
 
 
-// Write
-fputcsv($patents, array(
-    $application_id,
-    (string)$application_document->country,
-    (string)$application_document->date,
-    (string)$grant->{'invention-title'}
-));
-
-foreach ($grant->parties as $party) {
-  foreach ($party->agents as $agent) {
-    fputcsv($agents, array(
+  // Write
+  fputcsv($patents, array(
       $application_id,
-      (string)$agent->agent->addressbook->orgname,
-      (string)$agent->agent['rep-type']
+      (string)$application_document->country,
+      (string)$application_document->date,
+      (string)$grant->{'invention-title'}
+  ));
+
+  foreach ($grant->parties as $party) {
+    foreach ($party->agents as $agent) {
+      fputcsv($agents, array(
+        $application_id,
+        (string)$agent->agent->addressbook->orgname,
+        (string)$agent->agent['rep-type']
+      ));
+    }
+
+    foreach ($party->applicants as $applicant) {
+      fputcsv($applicants, array(
+        $application_id,
+        (string)$applicant->applicant->addressbook->orgname,
+        (string)$applicant->applicant->addressbook->{'last-name'},
+        (string)$applicant->applicant->addressbook->{'first-name'},
+        (string)$applicant->applicant->addressbook->address->city,
+        (string)$applicant->applicant->addressbook->address->state,
+        (string)$applicant->applicant->addressbook->address->country,
+        (string)$applicant->applicant['app-type'],
+        (string)$applicant->applicant->nationality->country,
+        (string)$applicant->applicant->residence->country
+      ));
+    }    
+  }
+
+
+  foreach ($grant->assignees as $assignee) {
+
+    fputcsv($assignees, array(
+      $application_id,
+      @(string)$assignee->assignee->addressbook->orgname,
+      @(string)$assignee->assignee->addressbook->address->city,
+      @(string)$assignee->assignee->addressbook->address->state,
+      @(string)$assignee->assignee->addressbook->address->country  
     ));
   }
 
-  foreach ($party->applicants as $applicant) {
-    fputcsv($applicants, array(
+
+
+  fputcsv($examiners, array(
+    $application_id,
+    (string)$grant->examiners->{'primary-examiner'}->{'last-name'},
+    (string)$grant->examiners->{'primary-examiner'}->{'first-name'},
+    (string)$grant->examiners->{'primary-examiner'}->department,
+    (string)$grant->examiners->{'assistant-examiner'}->{'last-name'},
+    (string)$grant->examiners->{'assistant-examiner'}->{'first-name'},
+    (string)$grant->examiners->{'assistant-examiner'}->department,
+  ));
+
+  foreach ($grant->{'us-field-of-classification-search'}->{'classification-national'} as $classification) {
+    fputcsv($classifications, array(
       $application_id,
-      (string)$applicant->applicant->addressbook->orgname,
-      (string)$applicant->applicant->addressbook->{'last-name'},
-      (string)$applicant->applicant->addressbook->{'first-name'},
-      (string)$applicant->applicant->addressbook->address->city,
-      (string)$applicant->applicant->addressbook->address->state,
-      (string)$applicant->applicant->addressbook->address->country,
-      (string)$applicant->applicant['app-type'],
-      (string)$applicant->applicant->nationality->country,
-      (string)$applicant->applicant->residence->country
+      (string)$classification->country,
+      (string)$classification->{'main-classification'},
+      (string)$classification->{'additional-info'}
     ));
-  }    
+  }
+
+  if ($grant->{'references-cited'}) {
+    foreach ($grant->{'references-cited'}->citation as $citation) {
+      fputcsv($references, array(
+        $application_id,
+        @(string)$citation->patcit->{'document-id'}->country,
+        @(string)$citation->patcit->{'document-id'}->{'doc-number'},
+        @(string)$citation->patcit->{'document-id'}->kind,
+        @(string)$citation->patcit->{'document-id'}->name,
+        @(string)$citation->patcit->{'document-id'}->date,
+        @(string)$citation->patcit->category,
+        @(string)$citation->patcit->{'classification-national'}->country,
+        @(string)$citation->patcit->{'classification-national'}->{'main-classification'}
+      ));
+    }
+  }
+  //print_r($grant);
 }
-
-
-foreach ($grant->assignees as $assignee) {
-
-  fputcsv($assignees, array(
-    $application_id,
-    (string)$assignee->assignee->addressbook->orgname,
-    (string)$assignee->assignee->addressbook->address->city,
-    (string)$assignee->assignee->addressbook->address->state,
-    (string)$assignee->assignee->addressbook->address->country  
-  ));
-}
-
-
-
-fputcsv($examiners, array(
-  $application_id,
-  (string)$grant->examiners->{'primary-examiner'}->{'last-name'},
-  (string)$grant->examiners->{'primary-examiner'}->{'first-name'},
-  (string)$grant->examiners->{'primary-examiner'}->department,
-  (string)$grant->examiners->{'assistant-examiner'}->{'last-name'},
-  (string)$grant->examiners->{'assistant-examiner'}->{'first-name'},
-  (string)$grant->examiners->{'assistant-examiner'}->department,
-));
-
-foreach ($grant->{'us-field-of-classification-search'}->{'classification-national'} as $classification) {
-  fputcsv($classifications, array(
-    $application_id,
-    (string)$classification->country,
-    (string)$classification->{'main-classification'},
-    (string)$classification->{'additional-info'}
-  ));
-}
-
-foreach ($grant->{'references-cited'}->citation as $citation) {
-  fputcsv($references, array(
-    $application_id,
-    (string)$citation->patcit->{'document-id'}->country,
-    (string)$citation->patcit->{'document-id'}->{'doc-number'},
-    (string)$citation->patcit->{'document-id'}->kind,
-    (string)$citation->patcit->{'document-id'}->name,
-    (string)$citation->patcit->{'document-id'}->date,
-    (string)$citation->patcit->category,
-    (string)$citation->patcit->{'classification-national'}->country,
-    (string)$citation->patcit->{'classification-national'}->{'main-classification'}
-  ));
-}
-print_r($grant);
