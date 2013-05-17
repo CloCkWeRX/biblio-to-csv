@@ -213,10 +213,9 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
   */
   fputcsv($patent_descriptions, array(
     $patent_id,
-    @(string)$grant->abstract->p,
+    (string)$doc->abstract->p,
     (string)$grant->{'invention-title'}
   ));
-
 
   foreach ($grant->parties as $party) {
     foreach ($party->agents as $agent) {
