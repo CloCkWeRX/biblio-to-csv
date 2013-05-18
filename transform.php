@@ -213,7 +213,7 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
   */
   fputcsv($patent_descriptions, array(
     $patent_id,
-    (string)$doc->abstract->p,
+    strip_tags((string)$doc->abstract->p),
     (string)$grant->{'invention-title'}
   ));
 
