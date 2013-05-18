@@ -51,7 +51,7 @@ class:
   -subclass (Current U.S. Subclass)
 */
 $classes = fopen($file . "-class.csv", 'w+');
-fputcsv($patents, array(
+fputcsv($classes, array(
   "patent",
   "prim",
   "class",
