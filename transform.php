@@ -107,7 +107,8 @@ fputcsv($applicants, array(
   "Zip",
   "Type",
   "Nationality",
-  "Residence"
+  "Residence",
+  "generated_sort"
 ));
 
 $agents = fopen($file . "-agents.csv", 'w+');
@@ -137,7 +138,8 @@ fputcsv($assignees, array(
   "City",
   "State",
   "Country",
-  "zip"
+  "zip",
+  "generated_sort"
 ));
 
 $examiners = fopen($file . "-examiners.csv", 'w+');
@@ -240,7 +242,9 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
       zip (Zip Code)
     */
 
+    $n = 0;
     foreach ($party->applicants as $applicant) {
+      $n++;
       fputcsv($applicants, array(
         $patent_id,
         (string)$applicant->applicant['sequence'],
@@ -253,12 +257,13 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
         (string)$applicant->applicant->addressbook->address->zip,
         (string)$applicant->applicant['app-type'],
         (string)$applicant->applicant->nationality->country,
-        (string)$applicant->applicant->residence->country
+        (string)$applicant->applicant->residence->country,
+        $n
       ));
     }    
   }
 
-
+  $n = 0;
   foreach ($grant->assignees as $assignee) {
     /*
     assignees:
@@ -271,7 +276,8 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
       country (Country)
       zip (Zip Code)
     */
-
+    $n++;
+    
     fputcsv($assignees, array(
       $patent_id,
       "asgseq",
@@ -280,7 +286,8 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
       @(string)$assignee->assignee->addressbook->address->city,
       @(string)$assignee->assignee->addressbook->address->state,
       @(string)$assignee->assignee->addressbook->address->country,
-      @(string)$assignee->assignee->addressbook->address->zip
+      @(string)$assignee->assignee->addressbook->address->zip,
+      $n
     ));
   }
 
