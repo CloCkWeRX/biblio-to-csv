@@ -215,9 +215,9 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
   */
   fputcsv($patent_descriptions, array(
     $patent_id,
-    strip_tags((string)$doc->abstract->p),
+    strip_tags((string)$doc->abstract),
     (string)$grant->{'invention-title'},
-    (string)$doc->abstract->p
+    (string)$doc->abstract
   ));
 
   foreach ($grant->parties as $party) {
@@ -277,10 +277,10 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
       zip (Zip Code)
     */
     $n++;
-    
+
     fputcsv($assignees, array(
       $patent_id,
-      "asgseq",
+      "", //asgseq doesn't really exist
       @(string)$assignee->assignee->addressbook->role, // TBC
       @(string)$assignee->assignee->addressbook->orgname,
       @(string)$assignee->assignee->addressbook->address->city,
