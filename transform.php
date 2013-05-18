@@ -154,6 +154,17 @@ fputcsv($examiners, array(
 ));
 
 
+// See http://www.uspto.gov/products/Patent_Grant_XML_v4.3.pdf page 96
+function split_classification($main_classification) {
+  $class = substr($main_classification, 0, 3);
+  $subclass[] = substr($main_classification, 3, 3);
+
+  if (strlen($main_classification) > 6) {
+    $subclass[] = substr($main_classification, 6, strlen($main_classification));
+  }
+
+  return array($class, implode(".", $subclass));
+}
 
 // Parse entries
 while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !== false) {
@@ -177,13 +188,95 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
   -class (Current U.S. Class)
   -subclass (Current U.S. Subclass)
   */
+
+  $main_classification = (string)$grant->{'classification-national'}->{'main-classification'};
+  list($class, $subclass) = split_classification($main_classification);
   fputcsv($classes, array(
     $patent_id,
-    (string)$grant->{'us-application-series-code'},
-    (string)$grant->{'classification-national'}->{'main-classification'}, // TBC!
-    (string)$grant->{'classification-locarno'}->{'edition'},// TBC!
-    (string)$grant->{'classification-locarno'}->{'main-classification'},// TBC!
+    1,
+    $class, // TBC!
+    $subclass, // TBC!
+
+    // (string)$grant->{'classification-locarno'}->{'edition'},// TBC!
+    // (string)$grant->{'classification-locarno'}->{'main-classification'},// TBC!
   ));
+
+  // And further classifications
+
+  foreach ($grant->{'classification-national'}->{'further-classification'} as $further_classification) { 
+    list($class, $subclass) = split_classification((string)$further_classification);
+    fputcsv($classes, array(
+      $patent_id,
+      0,
+      $class, // TBC!
+      $subclass, // TBC!
+
+      // (string)$grant->{'classification-locarno'}->{'edition'},// TBC!
+      // (string)$grant->{'classification-locarno'}->{'main-classification'},// TBC!
+    ));
+  }
+    /*
+<classification-national>
+<country>US</country>
+<main-classification> 4060701</main-classification>
+<further-classification>428 345</further-classification>
+<further-classification>428 346</further-classification>
+<further-classification>428 347</further-classification>
+<further-classification>428 357</further-classification>
+<further-classification>428 361</further-classification>
+<further-classification>428 363</further-classification>
+<further-classification>15624413</further-classification>
+</classification-national>
+    */
+
+/*
+Patent 
+Class
+Subclass
+Primary
+
+08341860
+40
+607.01 
+1
+
+08341860
+156
+244.13
+0
+
+08341860
+428
+34.5
+0
+
+08341860
+428
+34.6
+0
+
+08341860
+428
+34.7
+0
+
+08341860
+428
+35.7
+0
+
+08341860
+428
+36.1
+0
+
+08341860
+428
+36.3
+0
+
+*/
+
 
   /*
   patents:
