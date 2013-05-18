@@ -221,12 +221,14 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
   ));
 
   foreach ($grant->parties as $party) {
-    foreach ((array)$party->agents->agent as $agent) {
-      fputcsv($agents, array(
-        $patent_id,
-        (string)$agent->addressbook->orgname,
-        (string)$agent['rep-type']
-      ));
+    if ($party->agents) {
+      foreach ($party->agents as $agent) {
+        fputcsv($agents, array(
+          $patent_id,
+          (string)$agent->agent->addressbook->orgname,
+          (string)$agent->agent['rep-type']
+        ));
+      }
     }
 
     /*
