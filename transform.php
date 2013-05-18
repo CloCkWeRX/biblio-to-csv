@@ -197,7 +197,7 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
       $patent_id,
       (string)$publication_document->kind,
       (string)$grant->{'number-of-claims'},
-      (string)$application_document->type,
+      (string)$grant->{'us-application-series-code'}, //(string)$application_document->type,
       $application_id,
       (string)$publication_document->date,
       (string)$application_document->date,
@@ -214,7 +214,8 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
   fputcsv($patent_descriptions, array(
     $patent_id,
     strip_tags((string)$doc->abstract->p),
-    (string)$grant->{'invention-title'}
+    (string)$grant->{'invention-title'},
+    (string)$doc->abstract->p
   ));
 
   foreach ($grant->parties as $party) {
