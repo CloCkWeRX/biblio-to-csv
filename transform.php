@@ -221,11 +221,11 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
   ));
 
   foreach ($grant->parties as $party) {
-    foreach ($party->agents as $agent) {
+    foreach ((array)$party->agents->agent as $agent) {
       fputcsv($agents, array(
         $patent_id,
-        (string)$agent->agent->addressbook->orgname,
-        (string)$agent->agent['rep-type']
+        (string)$agent->addressbook->orgname,
+        (string)$agent['rep-type']
       ));
     }
 
@@ -264,31 +264,33 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
   }
 
   $n = 0;
-  foreach ($grant->assignees as $assignee) {
-    /*
-    assignees:
-      -patent (Patent Number)
-      -asgseq (Sequence Number)
-      asgtype (Assignee Type)
-      assignee (Name)
-      city (City)
-      state (State)
-      country (Country)
-      zip (Zip Code)
-    */
-    $n++;
+  if ($grant->assignees->assignee) {
+    foreach ($grant->assignees->assignee as $assignee) {
+      /*
+      assignees:
+        -patent (Patent Number)
+        -asgseq (Sequence Number)
+        asgtype (Assignee Type)
+        assignee (Name)
+        city (City)
+        state (State)
+        country (Country)
+        zip (Zip Code)
+      */
+      $n++;
 
-    fputcsv($assignees, array(
-      $patent_id,
-      "", //asgseq doesn't really exist
-      @(string)$assignee->assignee->addressbook->role, // TBC
-      @(string)$assignee->assignee->addressbook->orgname,
-      @(string)$assignee->assignee->addressbook->address->city,
-      @(string)$assignee->assignee->addressbook->address->state,
-      @(string)$assignee->assignee->addressbook->address->country,
-      @(string)$assignee->assignee->addressbook->address->zip,
-      $n
-    ));
+      fputcsv($assignees, array(
+        $patent_id,
+        "", //asgseq doesn't really exist
+        @(string)$assignee->addressbook->role, // TBC
+        @(string)$assignee->addressbook->orgname,
+        @(string)$assignee->addressbook->address->city,
+        @(string)$assignee->addressbook->address->state,
+        @(string)$assignee->addressbook->address->country,
+        @(string)$assignee->addressbook->address->zip,
+        $n
+      ));
+    }
   }
 
 
