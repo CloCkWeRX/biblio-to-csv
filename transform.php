@@ -243,21 +243,21 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
     */
 
     $n = 0;
-    foreach ($party->applicants as $applicant) {
+    foreach ($party->applicants->applicant as $applicant) {
       $n++;
       fputcsv($applicants, array(
         $patent_id,
-        (string)$applicant->applicant['sequence'],
+        (string)$applicant['sequence'],
         //(string)$applicant->applicant->addressbook->orgname,
-        (string)$applicant->applicant->addressbook->{'last-name'},
-        (string)$applicant->applicant->addressbook->{'first-name'},
-        (string)$applicant->applicant->addressbook->address->city,
-        (string)$applicant->applicant->addressbook->address->state,
-        (string)$applicant->applicant->addressbook->address->country,
-        (string)$applicant->applicant->addressbook->address->zip,
-        (string)$applicant->applicant['app-type'],
-        (string)$applicant->applicant->nationality->country,
-        (string)$applicant->applicant->residence->country,
+        (string)$applicant->addressbook->{'last-name'},
+        (string)$applicant->addressbook->{'first-name'},
+        (string)$applicant->addressbook->address->city,
+        (string)$applicant->addressbook->address->state,
+        (string)$applicant->addressbook->address->country,
+        (string)$applicant->addressbook->address->zip,
+        (string)$applicant['app-type'],
+        (string)$applicant->nationality->country,
+        (string)$applicant->residence->country,
         $n
       ));
     }    
