@@ -1,6 +1,8 @@
 <?php
-$file = $_SERVER['argv'][1];
-
+@$file = $_SERVER['argv'][1];
+if (empty($file)) {
+  die("Usage: php transform.php input.xml\n");
+}
 // Open the input stream
 $buffer = 9999999999999;
 $delim = '<?xml version="1.0" encoding="UTF-8"?>';
