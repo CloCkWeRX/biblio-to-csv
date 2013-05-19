@@ -308,9 +308,9 @@ Primary
   */
   fputcsv($patent_descriptions, array(
     $patent_id,
-    strip_tags((string)$doc->abstract),
+    strip_tags(trim((string)$doc->abstract)),
     (string)$grant->{'invention-title'},
-    (string)$doc->abstract
+    trim((string)$doc->abstract)
   ));
 
   foreach ($grant->parties as $party) {
@@ -346,6 +346,7 @@ Primary
         //(string)$applicant->applicant->addressbook->orgname,
         (string)$applicant->addressbook->{'last-name'},
         (string)$applicant->addressbook->{'first-name'},
+        (string)$applicant->addressbook->address->street,
         (string)$applicant->addressbook->address->city,
         (string)$applicant->addressbook->address->state,
         (string)$applicant->addressbook->address->country,
