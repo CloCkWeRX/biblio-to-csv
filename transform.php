@@ -199,6 +199,7 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
     1,
     $class, // TBC!
     $subclass, // TBC!
+    $main_classification
 
     // (string)$grant->{'classification-locarno'}->{'edition'},// TBC!
     // (string)$grant->{'classification-locarno'}->{'main-classification'},// TBC!
@@ -213,6 +214,7 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
       0,
       $class, // TBC!
       $subclass, // TBC!
+      $further_classification
 
       // (string)$grant->{'classification-locarno'}->{'edition'},// TBC!
       // (string)$grant->{'classification-locarno'}->{'main-classification'},// TBC!
