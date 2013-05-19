@@ -68,7 +68,14 @@ fputcsv($classes, array(
 $references = fopen($file . "-citations.csv", 'w+');
 fputcsv($references, array(
   "patent",
-  "cited"
+  "cited",
+  "country",
+  "kind",
+  "name",
+  "date",
+  "category",
+  "classification_country",
+  "classficiation_raw"
 ));
 
 $classifications = fopen($file . "-classifications.csv", 'w+');
@@ -427,8 +434,8 @@ Primary
     foreach ($grant->{'references-cited'}->citation as $citation) {
       fputcsv($references, array(
         $patent_id,
-        @(string)$citation->patcit->{'document-id'}->country,
         @(string)$citation->patcit->{'document-id'}->{'doc-number'},
+        @(string)$citation->patcit->{'document-id'}->country,
         @(string)$citation->patcit->{'document-id'}->kind,
         @(string)$citation->patcit->{'document-id'}->name,
         @(string)$citation->patcit->{'document-id'}->date,
