@@ -173,6 +173,7 @@ while (($doc = simplexml_load_string(stream_get_line($fp, $buffer, $delim))) !==
 
   $grant = $doc->{'us-bibliographic-data-grant'};
 
+
   $application_document = $grant->{'application-reference'}->{'document-id'};
   $publication_document = $grant->{'publication-reference'}->{'document-id'};
 
@@ -308,11 +309,19 @@ Primary
     abstract (Abstract)
     title (Title)
   */
+  $text = "";
+  $raw = "";
+  if ($doc->xpath('abstract')) {
+    foreach ($doc->abstract->p as $line) {
+      $text .= strip_tags((string)$line);
+      $raw .= (string)$line;
+    }
+  }
   fputcsv($patent_descriptions, array(
     $patent_id,
-    strip_tags(trim((string)$doc->abstract)),
+    $text,
     (string)$grant->{'invention-title'},
-    trim((string)$doc->abstract)
+    $raw
   ));
 
   foreach ($grant->parties as $party) {
