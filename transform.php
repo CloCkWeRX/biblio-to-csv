@@ -421,13 +421,15 @@ Primary
     (string)$grant->examiners->{'assistant-examiner'}->department,
   ));
 
-  foreach ($grant->{'us-field-of-classification-search'}->{'classification-national'} as $classification) {
-    fputcsv($classifications, array(
-      $patent_id,
-      (string)$classification->country,
-      (string)$classification->{'main-classification'},
-      (string)$classification->{'additional-info'}
-    ));
+  if ($grant->{'us-field-of-classification-search'}->{'classification-national'}) { 
+    foreach ($grant->{'us-field-of-classification-search'}->{'classification-national'} as $classification) {
+      fputcsv($classifications, array(
+        $patent_id,
+        (string)$classification->country,
+        (string)$classification->{'main-classification'},
+        (string)$classification->{'additional-info'}
+      ));
+    }
   }
 
   if ($grant->{'references-cited'}) {
