@@ -447,3 +447,5 @@ Primary
   }
   //print_r($grant);
 }
+
+unlink($file);
